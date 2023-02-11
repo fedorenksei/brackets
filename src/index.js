@@ -44,14 +44,16 @@ class Group {
       this.openedStack.push(newOpenedGroup)
       return true
     }
+
     return false
   }
 
   checkUniversals() {
     let universals = this.elements
-      .filter(element => element instanceof Bracket && element.type == 'universal')
+    .filter(element => element instanceof Bracket && element.type == 'universal')
     if (universals.length === 0) return true
     
+    // to do: get rid of this complex loop with a lot of variables
     let currArray = universals,
         isCleared = true
     do {
@@ -115,14 +117,3 @@ function check(string, bracketsConfig) {
   Bracket.setConfig(bracketsConfig)
   return Group.evaluate(string)
 }
-
-const config1 = [['(', ')']];
-const config2 = [['(', ')'], ['[', ']']];
-const config3 = [['(', ')'], ['[', ']'], ['{', '}']];
-const config4 = [['|', '|']];
-const config5 = [['(', ')'], ['|', '|']];
-const config6 = [['1', '2'], ['3', '4'], ['5', '6'], ['7', '7'], ['8', '8']];
-const config7 = [['(', ')'], ['[', ']'], ['{', '}'], ['|', '|']];
-
-const res = check('788', config6)
-console.log(res)
