@@ -1,7 +1,5 @@
 module.exports = check
 
-// test 14 is not passing, because the code works with maximum one type of universal brackets
-
 class Group {
   constructor (openBracket) {
     this.elements = []
@@ -17,7 +15,7 @@ class Group {
       const success = rootGroup.tryAdd(character)
       if (!success) return false
     }
-    const isCorrect = rootGroup.openedStack.length === 0 && rootGroup.isEvenAmountUniversals()
+    const isCorrect = rootGroup.openedStack.length === 0 && rootGroup.checkUniversals()
     return isCorrect
   }
 
@@ -28,7 +26,7 @@ class Group {
       const lastOpenedGroup = this.openedStack.pop()
       if (!lastOpenedGroup) return false
       if (lastOpenedGroup.closedBracket == bracket.char) {
-        return lastOpenedGroup.isEvenAmountUniversals()
+        return lastOpenedGroup.checkUniversals()
       }
       return false
     }
@@ -49,14 +47,38 @@ class Group {
     return false
   }
 
-  isEvenAmountUniversals() {
-    debugger
-    const amount = this.elements.filter(element => {
-      debugger
-      return element instanceof Bracket && element.type == 'universal'
-    }
-    ).length
-    return amount % 2 === 0
+  checkUniversals() {
+    let universals = this.elements
+      .filter(element => element instanceof Bracket && element.type == 'universal')
+    if (universals.length === 0) return true
+    
+    let currArray = universals,
+        isCleared = true
+    do {
+      isCleared = true
+      let newArray = [],
+          currType = currArray[0], 
+          count = 0;
+      
+      for (let element of currArray) {
+        if (element.char == currType.char) {
+          count++
+          continue
+        }
+
+        if (count % 2 !== 0) newArray.push(currType);
+        if (count > 1) isCleared = false;
+
+        currType = element
+        count = 1
+      }
+      if (count % 2 !== 0) newArray.push(currType);
+      if (count > 1) isCleared = false;
+
+      currArray = newArray
+    } while (!isCleared && currArray.length)
+
+    return currArray.length === 0
   }
 }
 
@@ -102,5 +124,5 @@ const config5 = [['(', ')'], ['|', '|']];
 const config6 = [['1', '2'], ['3', '4'], ['5', '6'], ['7', '7'], ['8', '8']];
 const config7 = [['(', ')'], ['[', ']'], ['{', '}'], ['|', '|']];
 
-const res = check('8888877878887777777888888887777777887887788788887887777777788888888887788888', config6)
+const res = check('788', config6)
 console.log(res)
